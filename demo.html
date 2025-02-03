@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Demo</title>
+    <style>
+        /* Full-page setup */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: black;
+        }
+
+        /* Full-page iframe */
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Full-screen Figma prototype -->
+    <iframe id="figmaEmbed" 
+        src="https://embed.figma.com/proto/tXvNlvLsrrWHqEJWKnbolD/CM-Workstation?node-id=227-3389&p=f&scaling=scale-down-width&content-scaling=fixed&page-id=16%3A2&starting-point-node-id=227%3A3389&show-proto-sidebar=1&embed-host=share" 
+        allowfullscreen>
+    </iframe>
+
+    <script>
+        // Detect when a new tab opens and refocus on the current page
+        document.addEventListener("visibilitychange", function() {
+            if (document.visibilityState === "hidden") {
+                setTimeout(() => {
+                    window.focus(); // Bring back focus to the demo
+                }, 500); // Short delay to ensure tab opens first
+            }
+        });
+    </script>
+
+</body>
+</html>
