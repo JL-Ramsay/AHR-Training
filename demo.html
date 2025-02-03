@@ -32,12 +32,12 @@
     </iframe>
 
     <script>
-        // Detect when a new tab opens and refocus on the current page
+        // When the page loses focus (user clicks tracking button inside Figma), refocus on Figma
         document.addEventListener("visibilitychange", function() {
             if (document.visibilityState === "hidden") {
                 setTimeout(() => {
-                    window.focus(); // Bring back focus to the demo
-                }, 500); // Short delay to ensure tab opens first
+                    window.focus(); // Bring back focus to the Figma demo
+                }, 300); // Short delay allows tab to open first
             }
         });
     </script>
