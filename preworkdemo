@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Demo</title>
+    <style>
+        /* Full-page setup */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: black;
+        }
+
+        /* Full-page iframe */
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Full-screen Figma prototype -->
+    <iframe id="figmaEmbed" 
+        src="https://embed.figma.com/proto/tXvNlvLsrrWHqEJWKnbolD/CM-Workstation?node-id=1191-16768&scaling=scale-down-width&content-scaling=fixed&page-id=16%3A2&starting-point-node-id=1191%3A16768&show-proto-sidebar=0&hide-ui=1&embed-host=share" 
+        allowfullscreen>
+    </iframe>
+
+    <script>
+        // Power Automate tracking URL (replace with the correct URL)
+        const trackingUrl = "https://prod-26.australiasoutheast.logic.azure.com:443/workflows/c0a7dcda3dc544458ace50c13d888d8e/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=XtQt4KJqsCui13fqhx_xfzqNxqvoiFNfV2zPSEMZINc";
+
+        // Send page view count request
+        function sendTrackingRequest() {
+            fetch(trackingUrl, { method: "GET", mode: "no-cors" }) // no-cors to avoid blocking
+                .catch(error => console.error("Tracking error:", error));
+        }
+
+        // Ensure request is sent once when the page loads
+        window.onload = sendTrackingRequest;
+    </script>
+
+</body>
+</html>
