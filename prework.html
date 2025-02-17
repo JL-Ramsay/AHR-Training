@@ -117,32 +117,44 @@
         </section>
 
     </div>
+    
     <script>
-    // Function to get query parameters from the URL
-    function getQueryParam(param) {
-        let searchParams = new URLSearchParams(window.location.search);
-        return searchParams.get(param);
-    }
-
-    // Get the email parameter from the URL
-    let userEmail = getQueryParam("email");
-
-    if (userEmail) {
-        // Log to Power Automate via HTTP request
-        fetch("https://prod-04.australiasoutheast.logic.azure.com:443/workflows/d4d626c32e774274a7b0776fd8549a69/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=0k-a1pKCZDWZLFSjF0b1bKXeif1s7ukPw5XR9TcQOu8", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                email: userEmail,
-                accessed_at: new Date().toISOString()
+        function getQueryParam(param) {
+            let searchParams = new URLSearchParams(window.location.search);
+            return searchParams.get(param);
+        }
+    
+        // Function to decode Base64
+        function decodeBase64(encodedString) {
+            try {
+                return atob(encodedString);
+            } catch (error) {
+                console.error("Error decoding email:", error);
+                return null;
+            }
+        }
+    
+        // Get the Base64 encoded email from the URL
+        let encodedEmail = getQueryParam("emailEncoded");
+        let userEmail = decodeBase64(encodedEmail);
+    
+        if (userEmail) {
+            // Log to Power Automate via HTTP request
+            fetch("https://prod-xx.westus.logic.azure.com/workflows/your-flow-id/triggers/manual/paths/invoke", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    email: userEmail,
+                    accessed_at: new Date().toISOString()
+                })
             })
-        })
-        .then(response => console.log("Access logged successfully"))
-        .catch(error => console.error("Error logging access:", error));
-    }
+            .then(response => console.log("Access logged successfully"))
+            .catch(error => console.error("Error logging access:", error));
+        }
     </script>
+
 
 </body>
 </html>
