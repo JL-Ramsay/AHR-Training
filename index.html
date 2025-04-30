@@ -32,7 +32,6 @@
         label, input, select, button {
             display: block;
             width: 100%;
-            /*margin-bottom: 1rem;*/
         }
         input, select {
             margin-bottom: 1rem;
@@ -76,6 +75,12 @@
             max-height: 4rem; 
             margin-right: 1rem; 
         }
+        #incorrect-answers {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 0.5rem;
+        }
     </style>
 </head>
 <body>
@@ -109,6 +114,9 @@
 
         <button type="submit">Submit</button>
     </form>
+
+    <!-- QUIZ FORM OMITTED FOR BREVITY — REMAINS UNCHANGED -->
+
 
     <form id="quiz-form" class="hidden">
         <h1>Competency Test</h1>
@@ -254,39 +262,43 @@
         <button type="submit">Submit Quiz</button>
     </form>
 
+
+    <!-- [Insert your full quiz form here; unchanged from your original message] -->
+
     <div id="results" class="hidden">
         <h1>Results</h1>
         <p id="results-message"></p>
+        <div id="incorrect-answers"></div>
         <button type="button" onclick="resetForm()">Finish</button>
     </div>
 </div>
 
 <script>
     function showQuizPage() {
-        console.log('User info form submitted');
-
-        // Hide user info form
         document.getElementById('user-info-form').classList.add('hidden');
-        console.log('User info form hidden');
-
-        // Show quiz form if it exists
         const quizForm = document.getElementById('quiz-form');
         if (quizForm) {
             quizForm.classList.remove('hidden');
-            console.log('Quiz form shown');
-        } else {
-            console.log('Quiz form not found');
         }
     }
 
-    function showResultsPage(score) {
+    function showResultsPage(score, incorrectQuestions) {
         const resultsDiv = document.getElementById('results');
         const resultMessage = document.getElementById('results-message');
+        const incorrectAnswersDiv = document.getElementById('incorrect-answers');
 
         if (score >= 8) {
-            resultMessage.textContent = `Congratulations! You scored ${score}/10. You will receive a certificate by email.`;
+            resultMessage.textContent = `🎉 Congratulations! You scored ${score}/10. You will receive a certificate by email.`;
         } else {
             resultMessage.textContent = `You scored ${score}/10. Please try again.`;
+        }
+
+        if (incorrectQuestions.length > 0) {
+            incorrectAnswersDiv.innerHTML = `<strong>Questions answered incorrectly:</strong><ul>` +
+                incorrectQuestions.map(q => `<li>Question ${q}</li>`).join('') +
+                `</ul>`;
+        } else {
+            incorrectAnswersDiv.innerHTML = '';
         }
 
         resultsDiv.classList.remove('hidden');
@@ -307,13 +319,17 @@
             q10: 'a'
         };
         let score = 0;
+        let incorrect = [];
+
         for (const [question, answer] of Object.entries(correctAnswers)) {
             const selectedAnswer = document.querySelector(`input[name="${question}"]:checked`);
             if (selectedAnswer && selectedAnswer.value === answer) {
                 score++;
+            } else {
+                incorrect.push(question.replace('q', '')); // e.g., "q4" -> "4"
             }
         }
-        return score;
+        return { score, incorrect };
     }
 
     function resetForm() {
@@ -322,10 +338,10 @@
         document.getElementById('results').classList.add('hidden');
         document.getElementById('user-info-form').classList.remove('hidden');
         document.getElementById('quiz-form').classList.add('hidden');
+        document.getElementById('incorrect-answers').innerHTML = '';
     }
 
     function submitData(userData) {
-        // Send data to Power Automate
         fetch('https://prod-30.australiasoutheast.logic.azure.com:443/workflows/0465e7ba3b5f4cfbbac6d25f7a73d3b0/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=BGi3HWxxXrChnN7diD3bVVzqotwURYSaA2f4gHVbUjE', {
             method: 'POST',
             headers: {
@@ -341,14 +357,23 @@
     }
 
     document.getElementById('user-info-form').addEventListener('submit', function(event) {
-        event.preventDefault(); // Prevent default form submission
-        showQuizPage(); // Show the quiz form
+        event.preventDefault();
+        showQuizPage();
     });
 
     document.getElementById('quiz-form').addEventListener('submit', function(event) {
-        event.preventDefault(); // Prevent default form submission
-        const score = calculateQuizScore();
-        showResultsPage(score);
+        event.preventDefault();
+
+        // Validate all questions answered
+        for (let i = 1; i <= 10; i++) {
+            if (!document.querySelector(`input[name="q${i}"]:checked`)) {
+                alert(`Please answer question ${i} before submitting.`);
+                return;
+            }
+        }
+
+        const { score, incorrect } = calculateQuizScore();
+        showResultsPage(score, incorrect);
 
         const userData = {
             fullName: document.getElementById('full-name').value,
@@ -359,7 +384,7 @@
             score: score.toString()
         };
 
-        submitData(userData); // Call submitData function
+        submitData(userData);
     });
 </script>
 </body>
